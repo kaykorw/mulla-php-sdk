@@ -6,23 +6,20 @@ namespace Mulla\Environment;
 
 use Mulla\Exceptions\InvalidArgumentException;
 
-/**
- * Resolution order:
- *   1. the 'baseUrl' client option
- *   2. the MULLA_BASE_URL environment variable
- *   3. the official URL for the key's environment (live / test)
- */
+
 final class DefaultEnvironmentResolver implements EnvironmentResolverInterface
 {
+    /** API version appended when a base URL does not end with one (e.g. ".../gateway"). */
+    public const API_VERSION = 'v1';
+
     /**
-     * Official API hosts per environment.
-     * TODO: fill in once the public production and sandbox hostnames are confirmed.
+     * Official gateway hosts per environment.
      *
      * @var array<string, string|null>
      */
     public const OFFICIAL_BASE_URLS = [
-        'live' => null,
-        'test' => null,
+        'live' => 'https://core.mulla.app/gateway',
+        'test' => 'https://mfs.kayko.dev/gateway',
     ];
 
     /**
@@ -42,8 +39,7 @@ final class DefaultEnvironmentResolver implements EnvironmentResolverInterface
 
         if ($url === null) {
             throw new InvalidArgumentException(sprintf(
-                'No Mulla API URL is configured for the %s environment. Pass the "baseUrl" option '
-                . '(e.g. "https://<host>/gateway/v1") or set the MULLA_BASE_URL environment variable.',
+                'No Mulla API URL is configured for the %s environment. Pass the "baseUrl" option',
                 $environment->value,
             ));
         }
@@ -52,6 +48,17 @@ final class DefaultEnvironmentResolver implements EnvironmentResolverInterface
             throw new InvalidArgumentException("The Mulla base URL \"{$url}\" is not a valid URL.");
         }
 
-        return rtrim($url, '/');
+        return self::withVersion($url);
+    }
+
+    /**
+     * Accepts the gateway URL as shown in the dashboard ("https://host/gateway")
+     * or with a version ("https://host/gateway/v1") and always returns the versioned form.
+     */
+    public static function withVersion(string $url): string
+    {
+        $url = rtrim($url, '/');
+
+        return preg_match('#/v\d+$#', $url) === 1 ? $url : $url . '/' . self::API_VERSION;
     }
 }

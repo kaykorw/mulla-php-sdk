@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mulla\Enums;
 
-/** Webhook events Mulla can send. */
 enum WebhookEventType: string
 {
     case CHARGE_SUCCESS = 'charge.success';

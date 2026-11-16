@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mulla\Enums;
 
-/** Permission scopes an API key can hold. */
 enum ApiScope: string
 {
     case CHARGES = 'CHARGES';

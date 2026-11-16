@@ -27,17 +27,41 @@ final class ClientConfigTest extends TestCase
         new MullaClient('pk_test_abc_def', ['baseUrl' => self::BASE]);
     }
 
-    public function testRequiresABaseUrlUntilOfficialHostsAreKnown(): void
+    public function testTestKeysDefaultToTheSandboxGateway(): void
+    {
+        putenv('MULLA_BASE_URL');
+        self::assertSame('https://mfs.kayko.dev/gateway/v1', (new MullaClient(self::KEY))->baseUrl());
+    }
+
+    public function testLiveKeysDefaultToTheProductionGateway(): void
+    {
+        putenv('MULLA_BASE_URL');
+        $client = new MullaClient('sk_live_AbC123_s3cr3tRandomPart');
+        self::assertTrue($client->isLive());
+        self::assertSame('https://core.mulla.app/gateway/v1', $client->baseUrl());
+    }
+
+    public function testMissingHostForAnEnvironmentIsReported(): void
     {
         putenv('MULLA_BASE_URL');
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('MULLA_BASE_URL');
-        new MullaClient(self::KEY);
+        $this->expectExceptionMessage('live environment');
+        new MullaClient('sk_live_AbC123_s3cr3tRandomPart', [
+            'environmentResolver' => new \Mulla\Environment\DefaultEnvironmentResolver(['live' => null, 'test' => null]),
+        ]);
+    }
+
+    public function testAcceptsGatewayUrlWithOrWithoutVersion(): void
+    {
+        $key = 'sk_live_AbC123_s3cr3tRandomPart';
+        self::assertSame('https://api.example.com/gateway/v1', (new MullaClient($key, ['baseUrl' => 'https://api.example.com/gateway']))->baseUrl());
+        self::assertSame('https://api.example.com/gateway/v1', (new MullaClient($key, ['baseUrl' => 'https://api.example.com/gateway/']))->baseUrl());
+        self::assertSame('http://localhost:5605/gateway/v2', (new MullaClient($key, ['baseUrl' => 'http://localhost:5605/gateway/v2']))->baseUrl());
     }
 
     public function testReadsBaseUrlFromEnvironmentVariable(): void
     {
-        putenv('MULLA_BASE_URL=https://env.mulla.test/gateway/v1/');
+        putenv('MULLA_BASE_URL=https://env.mulla.test/gateway/');
         try {
             self::assertSame('https://env.mulla.test/gateway/v1', (new MullaClient(self::KEY))->baseUrl());
         } finally {

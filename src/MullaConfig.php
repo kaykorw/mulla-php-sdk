@@ -19,7 +19,8 @@ use Mulla\Support\Uuid;
  * Immutable client configuration. Built from the options array passed to MullaClient.
  *
  * Options:
- *  - baseUrl         string   API root incl. "/gateway/v1". Defaults per environment / MULLA_BASE_URL.
+ *  - baseUrl         string   Gateway URL, e.g. "https://mfs.kayko.dev/gateway" ("/v1" is added if missing).
+ *                             Default: MULLA_BASE_URL, else core.mulla.app (live keys) / mfs.kayko.dev (test keys).
  *  - timeout         float    Total request timeout in seconds (default 30).
  *  - connectTimeout  float    Connection timeout in seconds (default 10).
  *  - maxRetries      int      Retries for network errors, 429 and 5xx (default 2). 0 disables.
@@ -146,7 +147,6 @@ final class MullaConfig
         );
     }
 
-    /** Key with the secret part masked, safe for logs: sk_test_AbC123_****. */
     public function maskedApiKey(): string
     {
         return 'sk_' . $this->environment->value . '_' . self::keyId($this->apiKey) . '_****';

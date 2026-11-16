@@ -7,7 +7,7 @@ namespace Mulla\Params;
 use Mulla\Exceptions\InvalidArgumentException;
 
 /**
- * Builder base: fluent setters collect fields; toArray() checks required ones
+ * Fluent setters collect fields; toArray() checks required ones
  * so mistakes are reported before any request is sent.
  */
 abstract class AbstractParams implements ParamsInterface

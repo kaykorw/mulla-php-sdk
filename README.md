@@ -20,9 +20,7 @@ composer require mulla/mulla-php
 use Mulla\MullaClient;
 use Mulla\Enums\Provider;
 
-$mulla = new MullaClient('sk_test_...', [
-    'baseUrl' => 'https://mfs.kayko.dev/gateway/v1', // or set MULLA_BASE_URL
-]);
+$mulla = new MullaClient('sk_test_...'); // test keys use the sandbox: https://mfs.kayko.dev/gateway
 
 $charge = $mulla->charges->initiate([
     'provider'     => Provider::MTN_RW,
@@ -42,6 +40,15 @@ if ($charge->isSuccessful()) {
 ```
 
 Test keys (`sk_test_...`) only work on the sandbox server and live keys (`sk_live_...`) only on production.
+
+| Key | Default gateway |
+|---|---|
+| `sk_test_...` | `https://mfs.kayko.dev/gateway` (sandbox) |
+| `sk_live_...` | `https://core.mulla.app/gateway` (production) |
+
+Override with the `baseUrl` option or the `MULLA_BASE_URL` environment variable (e.g. a local server).
+
+You can paste the gateway URL exactly as the dashboard shows it (`https://host/gateway`); the SDK adds `/v1`.
 
 ## Important Usage: Good to know
 
@@ -168,7 +175,7 @@ try {
 
 ```php
 $mulla = new MullaClient('sk_live_...', [
-    'baseUrl'        => 'https://mfs.kayko.dev/gateway/v1',
+    'baseUrl'        => 'https://core.mulla.app/gateway', // optional: defaults from the key
     'timeout'        => 30,          // seconds
     'connectTimeout' => 10,
     'maxRetries'     => 2,           // network errors, 429 and 5xx; 0 disables

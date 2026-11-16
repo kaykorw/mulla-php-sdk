@@ -21,9 +21,6 @@ use Mulla\Webhooks\Webhook;
 /**
  * Entry point to the Mulla API (Facade over all services).
  *
- *     $mulla = new MullaClient('sk_test_...');
- *     $charge = $mulla->charges->initiate([...]);
- *
  * @property-read ChargeService          $charges         Collect money (direct push or hosted checkout)
  * @property-read CheckoutService        $checkout        Public checkout-session endpoints (token based)
  * @property-read PayoutService          $payouts         Send money to phones
@@ -58,7 +55,6 @@ final class MullaClient
         return in_array($name, ServiceFactory::names(), true);
     }
 
-    /** Whether the key is a test or live key. */
     public function environment(): Environment
     {
         return $this->config->environment;
@@ -79,7 +75,6 @@ final class MullaClient
         return $this->config;
     }
 
-    /** Webhook verifier for endpoint's signing secret. */
     public function webhooks(string $secret, int $toleranceSeconds = 300): Webhook
     {
         return new Webhook($secret, $toleranceSeconds);
