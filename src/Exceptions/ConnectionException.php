@@ -7,6 +7,4 @@ namespace Mulla\Exceptions;
 /**
  * The API could not be reached (DNS, TLS, timeout, connection reset). No HTTP response was received.
  */
-class ConnectionException extends MullaException
-{
-}
+class ConnectionException extends MullaException {}

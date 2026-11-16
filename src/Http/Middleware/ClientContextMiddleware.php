@@ -19,8 +19,7 @@ final class ClientContextMiddleware implements MiddlewareInterface
         private readonly string $deviceId,
         private readonly ?string $lang = null,
         private readonly ?string $appInfo = null,
-    ) {
-    }
+    ) {}
 
     public function handle(Request $request, callable $next): Response
     {

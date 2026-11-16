@@ -25,9 +25,7 @@ final class DefaultEnvironmentResolver implements EnvironmentResolverInterface
     /**
      * @param array<string, string|null> $baseUrls override the official hosts (keys: live, test)
      */
-    public function __construct(private readonly array $baseUrls = self::OFFICIAL_BASE_URLS)
-    {
-    }
+    public function __construct(private readonly array $baseUrls = self::OFFICIAL_BASE_URLS) {}
 
     public function resolveBaseUrl(Environment $environment, ?string $configuredBaseUrl): string
     {

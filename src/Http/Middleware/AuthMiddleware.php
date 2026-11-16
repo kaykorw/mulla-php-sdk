@@ -14,9 +14,7 @@ final class AuthMiddleware implements MiddlewareInterface
 {
     public const HEADER = 'x-api-key';
 
-    public function __construct(private readonly string $apiKey)
-    {
-    }
+    public function __construct(private readonly string $apiKey) {}
 
     public function handle(Request $request, callable $next): Response
     {

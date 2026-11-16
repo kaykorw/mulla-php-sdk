@@ -16,9 +16,7 @@ final class CurlTransport implements TransportInterface
     /**
      * @param array<int, mixed> $curlOptions Extra CURLOPT_* options (e.g. proxy settings)
      */
-    public function __construct(private readonly array $curlOptions = [])
-    {
-    }
+    public function __construct(private readonly array $curlOptions = []) {}
 
     public function send(Request $request): Response
     {

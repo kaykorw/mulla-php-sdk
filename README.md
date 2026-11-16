@@ -20,7 +20,7 @@ composer require mulla/mulla-php
 use Mulla\MullaClient;
 use Mulla\Enums\Provider;
 
-$mulla = new MullaClient('sk_test_...'); // test keys use the sandbox: https://mfs.kayko.dev/gateway
+$mulla = new MullaClient('sk_test_...');
 
 $charge = $mulla->charges->initiate([
     'provider'     => Provider::MTN_RW,
@@ -31,16 +31,13 @@ $charge = $mulla->charges->initiate([
 ]);
 
 // The customer approves the prompt on their device.
-// Mulla then sends you a webhook, or you can poll:
+// Mulla then sends a webhook, or can poll:
 $charge = $mulla->charges->waitForFinalStatus($charge->id);
 
 if ($charge->isSuccessful()) {
     // fulfil the order
 }
 ```
-
-Test keys (`sk_test_...`) only work on the sandbox server and live keys (`sk_live_...`) only on production.
-
 | Key | Default gateway |
 |---|---|
 | `sk_test_...` | `https://mfs.kayko.dev/gateway` (sandbox) |
@@ -50,7 +47,7 @@ Override with the `baseUrl` option or the `MULLA_BASE_URL` environment variable 
 
 You can paste the gateway URL exactly as the dashboard shows it (`https://host/gateway`); the SDK adds `/v1`.
 
-## Important Usage: Good to know
+## Good to know
 
 ### Builders or arrays: your choice
 
@@ -238,11 +235,4 @@ composer install
 composer test               # unit tests
 composer analyse            # PHPStan level 8
 composer cs                 # code style (php-cs-fixer --dry-run)
-
-# Against a real server (local docker stack or sandbox):
-MULLA_SECRET_KEY=sk_test_... MULLA_BASE_URL=http://localhost:5605/gateway/v1 composer test:integration
 ```
-
-## License
-
-MIT

@@ -10,9 +10,9 @@ use Mulla\Enums\WebhookEventType;
  * Observer: register listeners per event type and dispatch verified events to them.
  *
  *     $dispatcher = (new EventDispatcher())
- *         ->on(WebhookEventType::CHARGE_SUCCESS, fn (Event $e) => markOrderPaid($e->metadata()['order_id']))
- *         ->on(WebhookEventType::CHARGE_FAILED, fn (Event $e) => markOrderFailed($e))
- *         ->onAny(fn (Event $e) => logger()->info($e->type));
+ *         ->on(WebhookEventType::CHARGE_SUCCESS, fn(Event $e) => markOrderPaid($e->metadata()['order_id']))
+ *         ->on(WebhookEventType::CHARGE_FAILED, fn(Event $e) => markOrderFailed($e))
+ *         ->onAny(fn(Event $e) => logger()->info($e->type));
  *
  *     $dispatcher->dispatch($event);
  */

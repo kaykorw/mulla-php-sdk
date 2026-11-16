@@ -18,9 +18,7 @@ abstract class AbstractParams implements ParamsInterface
     /** @var array<string, mixed> */
     protected array $data = [];
 
-    final public function __construct()
-    {
-    }
+    final public function __construct() {}
 
     public static function make(): static
     {
@@ -37,7 +35,7 @@ abstract class AbstractParams implements ParamsInterface
 
     public function toArray(): array
     {
-        $missing = array_filter(static::REQUIRED, fn (string $f): bool => !isset($this->data[$f]) || $this->data[$f] === '');
+        $missing = array_filter(static::REQUIRED, fn(string $f): bool => !isset($this->data[$f]) || $this->data[$f] === '');
         if ($missing !== []) {
             throw new InvalidArgumentException(sprintf(
                 '%s is missing required field(s): %s.',

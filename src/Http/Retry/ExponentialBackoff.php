@@ -19,8 +19,7 @@ final class ExponentialBackoff implements RetryStrategyInterface
         private readonly float $baseDelay = 0.5,
         private readonly float $maxDelay = 8.0,
         private readonly bool $jitter = true,
-    ) {
-    }
+    ) {}
 
     public function shouldRetry(int $attempt, ?Response $response, ?\Throwable $error): bool
     {

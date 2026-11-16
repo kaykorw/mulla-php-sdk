@@ -11,9 +11,7 @@ use Mulla\Exceptions\MullaException;
  */
 final class ModelFactory
 {
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * @template T of AbstractModel

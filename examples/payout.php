@@ -21,7 +21,7 @@ try {
             ->provider(Provider::AIRTEL_RW)
             ->phoneNumber('250733000000')
             ->amount(5000)
-            ->reason('Supplier payment #42')
+            ->reason('Supplier payment #42'),
     );
 
     $payout = $mulla->payouts->waitForFinalStatus($payout->id);

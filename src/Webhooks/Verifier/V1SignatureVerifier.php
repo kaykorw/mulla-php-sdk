@@ -30,7 +30,7 @@ final class V1SignatureVerifier implements SignatureVerifierInterface
         if ($given === '' || !hash_equals(self::sign($payload, $secret), $given)) {
             throw new SignatureVerificationException(
                 'Webhook signature does not match. Make sure you pass the raw request body '
-                . '(not re-encoded JSON) and the secret of your current webhook endpoint.'
+                . '(not re-encoded JSON) and the secret of your current webhook endpoint.',
             );
         }
     }

@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.1' # lowest supported version, so the fixer never suggests newer syntax
           coverage: none
       - run: composer update --no-interaction --no-progress --prefer-dist
       - run: composer cs

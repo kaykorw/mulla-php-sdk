@@ -19,7 +19,7 @@ enum Environment: string
     {
         if (preg_match('/^sk_(live|test)_[A-Za-z0-9]+_/', $apiKey, $m) !== 1) {
             throw new InvalidArgumentException(
-                'Invalid Mulla secret key. Expected a key starting with "sk_live_" or "sk_test_".'
+                'Invalid Mulla secret key. Expected a key starting with "sk_live_" or "sk_test_".',
             );
         }
 

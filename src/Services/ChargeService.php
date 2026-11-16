@@ -63,6 +63,6 @@ final class ChargeService extends AbstractService
      */
     public function waitForFinalStatus(string $id, int $timeoutSeconds = 120, int $intervalSeconds = 5): Charge
     {
-        return $this->pollUntilFinal(fn (): Charge => $this->retrieve($id), $timeoutSeconds, $intervalSeconds);
+        return $this->pollUntilFinal(fn(): Charge => $this->retrieve($id), $timeoutSeconds, $intervalSeconds);
     }
 }

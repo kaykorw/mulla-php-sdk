@@ -24,8 +24,7 @@ abstract class AbstractService
     public function __construct(
         protected readonly ApiRequestor $requestor,
         protected readonly MullaConfig $config,
-    ) {
-    }
+    ) {}
 
     /**
      * @template T of AbstractModel

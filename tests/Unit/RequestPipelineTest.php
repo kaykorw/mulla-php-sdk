@@ -56,7 +56,7 @@ final class RequestPipelineTest extends TestCase
         $this->fake->pushJson(self::charge());
 
         $client->charges->initiate(
-            InitiateChargeParams::make()->provider(Provider::AIRTEL_RW)->phoneNumber('250733000000')->amount(1000)->metadata(['order_id' => 7, 'note' => null])
+            InitiateChargeParams::make()->provider(Provider::AIRTEL_RW)->phoneNumber('250733000000')->amount(1000)->metadata(['order_id' => 7, 'note' => null]),
         );
 
         self::assertSame(
@@ -99,7 +99,7 @@ final class RequestPipelineTest extends TestCase
         $charge = $client->charges->initiate(['provider' => 'MTN_RW', 'amount' => 100, 'phone_number' => '250788000000']);
 
         self::assertSame('CHG20261116ABCD', $charge->reference);
-        $keys = array_map(static fn (Request $r) => $r->header('x-idempotency-key'), $this->fake->requests());
+        $keys = array_map(static fn(Request $r) => $r->header('x-idempotency-key'), $this->fake->requests());
         self::assertCount(3, $keys);
         self::assertCount(1, array_unique($keys));
         self::assertCount(2, $this->sleeps);
@@ -160,9 +160,7 @@ final class RequestPipelineTest extends TestCase
     {
         $seen = [];
         $middleware = new class ($seen) implements MiddlewareInterface {
-            public function __construct(private array &$seen)
-            {
-            }
+            public function __construct(private array &$seen) {}
 
             public function handle(Request $request, callable $next): Response
             {

@@ -127,6 +127,6 @@ final class FakeTransport implements TransportInterface
     {
         return $this->sent === []
             ? '(none)'
-            : implode(', ', array_map(static fn (Request $r): string => $r->method . ' ' . $r->url, $this->sent));
+            : implode(', ', array_map(static fn(Request $r): string => $r->method . ' ' . $r->url, $this->sent));
     }
 }

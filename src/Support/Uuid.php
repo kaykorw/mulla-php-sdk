@@ -9,9 +9,7 @@ namespace Mulla\Support;
  */
 final class Uuid
 {
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /** Random RFC 4122 version-4 UUID. */
     public static function v4(): string

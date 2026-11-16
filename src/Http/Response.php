@@ -19,8 +19,7 @@ final class Response
         public readonly int $statusCode,
         public readonly array $headers = [],
         public readonly string $body = '',
-    ) {
-    }
+    ) {}
 
     public function header(string $name): ?string
     {

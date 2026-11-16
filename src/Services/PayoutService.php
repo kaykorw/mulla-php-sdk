@@ -45,6 +45,6 @@ final class PayoutService extends AbstractService
 
     public function waitForFinalStatus(string $id, int $timeoutSeconds = 120, int $intervalSeconds = 5): Payout
     {
-        return $this->pollUntilFinal(fn (): Payout => $this->retrieve($id), $timeoutSeconds, $intervalSeconds);
+        return $this->pollUntilFinal(fn(): Payout => $this->retrieve($id), $timeoutSeconds, $intervalSeconds);
     }
 }

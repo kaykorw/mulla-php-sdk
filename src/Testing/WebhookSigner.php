@@ -21,9 +21,7 @@ use Mulla\Webhooks\Verifier\V2SignatureVerifier;
  */
 final class WebhookSigner
 {
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * @param array<string, mixed> $data

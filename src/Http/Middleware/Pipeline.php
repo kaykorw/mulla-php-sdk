@@ -22,10 +22,10 @@ final class Pipeline
      */
     public function __construct(TransportInterface $transport, array $middleware = [])
     {
-        $next = static fn (Request $request): Response => $transport->send($request);
+        $next = static fn(Request $request): Response => $transport->send($request);
 
         foreach (array_reverse($middleware) as $layer) {
-            $next = static fn (Request $request): Response => $layer->handle($request, $next);
+            $next = static fn(Request $request): Response => $layer->handle($request, $next);
         }
 
         $this->handler = $next;

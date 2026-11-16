@@ -28,7 +28,7 @@ final class V2SignatureVerifier implements SignatureVerifierInterface
         private readonly int $toleranceSeconds = 300,
         ?callable $clock = null,
     ) {
-        $this->clock = $clock ?? static fn (): int => time();
+        $this->clock = $clock ?? static fn(): int => time();
     }
 
     public static function sign(string $payload, string $secret, int $timestamp): string
@@ -59,7 +59,7 @@ final class V2SignatureVerifier implements SignatureVerifierInterface
         if ($given === '' || !hash_equals(self::sign($payload, $secret, (int) $timestamp), $given)) {
             throw new SignatureVerificationException(
                 'Webhook signature does not match. Make sure you pass the raw request body '
-                . '(not re-encoded JSON) and the secret of your current webhook endpoint.'
+                . '(not re-encoded JSON) and the secret of your current webhook endpoint.',
             );
         }
     }

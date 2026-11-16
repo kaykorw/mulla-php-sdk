@@ -73,7 +73,7 @@ final class WebhookTest extends TestCase
     public function testVerifiesV2WithinTolerance(): void
     {
         $v = self::vector();
-        $webhook = new Webhook($v['secret'], verifiers: [new V2SignatureVerifier(300, fn () => $v['timestamp'] + 100), new V1SignatureVerifier()]);
+        $webhook = new Webhook($v['secret'], verifiers: [new V2SignatureVerifier(300, fn() => $v['timestamp'] + 100), new V1SignatureVerifier()]);
 
         $event = $webhook->parse($v['body'], [
             'x-webhook-timestamp' => (string) $v['timestamp'],
@@ -86,7 +86,7 @@ final class WebhookTest extends TestCase
     public function testRejectsReplayedV2Event(): void
     {
         $v = self::vector();
-        $webhook = new Webhook($v['secret'], verifiers: [new V2SignatureVerifier(300, fn () => $v['timestamp'] + 301)]);
+        $webhook = new Webhook($v['secret'], verifiers: [new V2SignatureVerifier(300, fn() => $v['timestamp'] + 301)]);
 
         $this->expectException(SignatureVerificationException::class);
         $this->expectExceptionMessage('tolerance');

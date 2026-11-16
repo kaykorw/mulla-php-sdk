@@ -42,6 +42,6 @@ final class RechargeService extends AbstractService
 
     public function waitForFinalStatus(string $id, int $timeoutSeconds = 120, int $intervalSeconds = 5): Recharge
     {
-        return $this->pollUntilFinal(fn (): Recharge => $this->retrieve($id), $timeoutSeconds, $intervalSeconds);
+        return $this->pollUntilFinal(fn(): Recharge => $this->retrieve($id), $timeoutSeconds, $intervalSeconds);
     }
 }

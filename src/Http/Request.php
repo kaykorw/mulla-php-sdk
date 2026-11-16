@@ -21,8 +21,7 @@ final class Request
         public readonly float $timeout = 30.0,
         public readonly float $connectTimeout = 10.0,
         public readonly array $attributes = [],
-    ) {
-    }
+    ) {}
 
     public function withHeader(string $name, string $value): self
     {

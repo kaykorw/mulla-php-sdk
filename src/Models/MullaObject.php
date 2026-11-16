@@ -10,9 +10,7 @@ namespace Mulla\Models;
  */
 final class MullaObject extends AbstractModel
 {
-    protected function hydrate(array $data): void
-    {
-    }
+    protected function hydrate(array $data): void {}
 
     public function __get(string $name): mixed
     {

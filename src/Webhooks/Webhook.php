@@ -101,7 +101,7 @@ final class Webhook
         }
 
         throw new SignatureVerificationException(
-            'No Mulla signature header found (expected "x-webhook-signature"). Is this request really from Mulla?'
+            'No Mulla signature header found (expected "x-webhook-signature"). Is this request really from Mulla?',
         );
     }
 

@@ -22,8 +22,7 @@ final class RequestOptions
         public readonly ?string $lang = null,
         public readonly ?float $timeout = null,
         public readonly array $headers = [],
-    ) {
-    }
+    ) {}
 
     /**
      * @param RequestOptions|array{idempotency_key?: string, lang?: string, timeout?: float, headers?: array<string, string>}|null $options

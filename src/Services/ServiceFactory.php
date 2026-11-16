@@ -31,8 +31,7 @@ final class ServiceFactory
     public function __construct(
         private readonly ApiRequestor $requestor,
         private readonly MullaConfig $config,
-    ) {
-    }
+    ) {}
 
     public function get(string $name): AbstractService
     {

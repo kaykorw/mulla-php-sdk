@@ -27,9 +27,7 @@ final class ExceptionFactory
         'VALIDATION_FAILED' => 'One or more parameters are invalid. Unknown fields are rejected too.',
     ];
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     public static function fromResponse(Response $response): ApiException
     {

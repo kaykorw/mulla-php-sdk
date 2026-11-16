@@ -14,9 +14,7 @@ use Mulla\Params\ParamsInterface;
  */
 final class Normalizer
 {
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * @param ParamsInterface|array<string, mixed>|null $params

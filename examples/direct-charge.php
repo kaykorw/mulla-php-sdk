@@ -25,7 +25,7 @@ try {
             ->phoneNumber($argv[1] ?? '250788000000')
             ->amount(1000)
             ->reason('Order #1001')
-            ->metadata(['order_id' => 1001])
+            ->metadata(['order_id' => 1001]),
     );
 
     echo "Charge {$charge->reference} created. Approve the prompt on your phone...\n";

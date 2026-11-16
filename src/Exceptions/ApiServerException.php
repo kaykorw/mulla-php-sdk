@@ -7,6 +7,4 @@ namespace Mulla\Exceptions;
 /**
  * 5xx: Mulla had an internal error. Safe to retry with the same idempotency key.
  */
-class ApiServerException extends ApiException
-{
-}
+class ApiServerException extends ApiException {}

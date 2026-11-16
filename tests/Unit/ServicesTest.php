@@ -54,7 +54,7 @@ final class ServicesTest extends TestCase
         self::assertCount(2, $page);
         self::assertTrue($page->hasMore());
 
-        $ids = array_map(static fn (Charge $c) => $c->id, iterator_to_array($page, false));
+        $ids = array_map(static fn(Charge $c) => $c->id, iterator_to_array($page, false));
 
         self::assertSame(['a', 'b', 'c'], $ids);
         self::assertStringContainsString('page=2', (string) $this->fake->lastRequest()?->url);
@@ -84,7 +84,7 @@ final class ServicesTest extends TestCase
         ]);
 
         $session = $client->charges->createCheckout(
-            CreateCheckoutParams::make()->amount(5000)->successUrl('https://shop.test/ok')->cancelUrl('https://shop.test/cancel')
+            CreateCheckoutParams::make()->amount(5000)->successUrl('https://shop.test/ok')->cancelUrl('https://shop.test/cancel'),
         );
         self::assertSame('tok', $session->token);
         self::assertSame(5000, $session->amount);
@@ -104,7 +104,7 @@ final class ServicesTest extends TestCase
         $this->fake->pushJson(['id' => 'inv_1', 'status' => 'ISSUED', 'items' => [['name' => 'Consulting', 'unit_price' => 50000, 'quantity' => 2]]]);
 
         $invoice = $client->invoices->create(
-            InvoiceParams::make()->customer('cus_1')->addItem('Consulting', unitPrice: 50000, quantity: 2)
+            InvoiceParams::make()->customer('cus_1')->addItem('Consulting', unitPrice: 50000, quantity: 2),
         );
         self::assertSame(['customer' => ['id' => 'cus_1'], 'items' => [['name' => 'Consulting', 'unit_price' => 50000, 'quantity' => 2]]], $this->fake->lastBody());
         self::assertSame(2, $invoice->items[0]->quantity);
