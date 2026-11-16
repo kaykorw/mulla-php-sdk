@@ -11,4 +11,3 @@ interface EnvironmentResolverInterface
 {
     public function resolveBaseUrl(Environment $environment, ?string $configuredBaseUrl): string;
 }
-    

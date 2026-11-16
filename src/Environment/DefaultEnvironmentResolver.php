@@ -6,7 +6,6 @@ namespace Mulla\Environment;
 
 use Mulla\Exceptions\InvalidArgumentException;
 
-
 final class DefaultEnvironmentResolver implements EnvironmentResolverInterface
 {
     /** API version appended when a base URL does not end with one (e.g. ".../gateway"). */
