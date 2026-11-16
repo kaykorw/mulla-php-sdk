@@ -1,0 +1,8 @@
+{
+  "description": "Generated with Node crypto exactly like Mulla merchant_webhook.helper.ts (createHmac sha512 hex). Shared conformance vector for all SDKs.",
+  "secret": "3f9a1c0e7b2d4a6f8e1c3b5d7f9a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d1f3a",
+  "body": "{\"event\":\"charge.success\",\"event_id\":\"4f6c2a8e-1b3d-4e5f-9a7b-0c1d2e3f4a5b\",\"data\":{\"charge\":\"9b2e5c1a-7d4f-4a3b-8c6e-1f2a3b4c5d6e\",\"payment\":\"1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d\",\"transaction_id\":\"e7d6c5b4-a3b2-4c1d-9e8f-7a6b5c4d3e2f\",\"reference\":\"CHG20261116ABCD\",\"amount\":5000,\"currency\":\"RWF\",\"status\":\"SUCCESSFUL\"}}",
+  "v1_signature": "b578a855188f015c8191fc38f3dabe5ea05f3d82e0ee8eedadcd7bd905ba2516f9b44b24f39898bf7f47cfbf0eba93dd83fe12f3690115d8451beae925f37358",
+  "timestamp": 1763290000,
+  "v2_signature": "77f9f22567734ce8c5551518498df037940f1c204af917793bb4f23e500ebee67ed31865983e867ed229aabb0ab253feeb2238dfe9e702644d2a36719a2959b0"
+}

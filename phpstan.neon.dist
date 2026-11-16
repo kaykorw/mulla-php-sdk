@@ -1,0 +1,12 @@
+parameters:
+    level: 8
+    paths:
+        - src
+    treatPhpDocTypesAsCertain: false
+    additionalConstructors:
+        - Mulla\Models\AbstractModel::hydrate
+    ignoreErrors:
+        # Psr18Transport duck-types optional PSR interfaces so psr/* is not a hard dependency.
+        -
+            message: '#Call to an undefined method object::#'
+            path: src/Http/Transport/Psr18Transport.php
