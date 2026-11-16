@@ -16,11 +16,6 @@ use Mulla\MullaConfig;
 use Mulla\Params\ParamsInterface;
 use Mulla\Support\Normalizer;
 
-/**
- * Template Method base for every resource service.
- * Each public operation is: build path -> send -> hydrate into a model.
- * Concrete services only declare paths and model classes.
- */
 abstract class AbstractService
 {
     protected const SCOPE = null;

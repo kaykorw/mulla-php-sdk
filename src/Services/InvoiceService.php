@@ -13,10 +13,7 @@ use Mulla\Models\PaymentInitiation;
 use Mulla\Models\PaymentTransaction;
 use Mulla\Params\InvoiceParams;
 
-/**
- * Create and manage invoices. Requires the INVOICES scope
- * (except retrievePublic() and pay(), which are public).
- */
+
 final class InvoiceService extends AbstractService
 {
     protected const SCOPE = \Mulla\Enums\ApiScope::INVOICES;
@@ -108,5 +105,14 @@ final class InvoiceService extends AbstractService
             ['provider' => $provider, 'phone_number' => $phoneNumber, 'notes' => $notes],
             $options,
         );
+    }
+
+    /**
+     * Public Server-Sent Events URL that streams the invoice's payment status.
+     * Open it from a browser (new EventSource(url)) to update an invoice page live.
+     */
+    public function eventsUrl(string $id): string
+    {
+        return $this->config->baseUrl . '/invoice/' . self::id($id, 'invoice id') . '/events';
     }
 }

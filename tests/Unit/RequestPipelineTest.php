@@ -91,7 +91,7 @@ final class RequestPipelineTest extends TestCase
         self::assertSame('rw', $this->fake->lastRequest()?->header('x-lang'));
     }
 
-    public function testRetriesServerErrorsReusingTheSameIdempotencyKey(): void
+    public function testRetriesUnprocessedWritesReusingTheSameIdempotencyKey(): void
     {
         $client = $this->client();
         $this->fake->pushError(503, 'SERVICE_UNAVAILABLE')->pushConnectionError()->pushJson(self::charge());
