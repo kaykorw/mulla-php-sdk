@@ -13,7 +13,6 @@ use Mulla\Models\PaymentInitiation;
 use Mulla\Models\PaymentTransaction;
 use Mulla\Params\InvoiceParams;
 
-
 final class InvoiceService extends AbstractService
 {
     protected const SCOPE = \Mulla\Enums\ApiScope::INVOICES;

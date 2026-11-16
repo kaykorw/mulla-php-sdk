@@ -105,7 +105,7 @@ $page = $mulla->charges->list(['limit' => 20]); // one page: $page->data, $page-
 | `$mulla->checkout` | `retrieve`, `pay`, `eventsUrl` (public, token based) |
 | `$mulla->payouts` | `initiate`, `retrieve`, `list`, `waitForFinalStatus` |
 | `$mulla->recharges` | `initiate`, `retrieve`, `list`, `waitForFinalStatus` |
-| `$mulla->invoices` | `create`, `retrieve`, `list`, `update`, `updateStatus`, `listPayments`, `retrievePayment`, `retrievePublic`, `pay` |
+| `$mulla->invoices` | `create`, `retrieve`, `list`, `update`, `updateStatus`, `listPayments`, `retrievePayment`, `retrievePublic`, `pay`, `eventsUrl` |
 | `$mulla->customers` | `create`, `retrieve`, `list`, `update`, `blacklist`, `whitelist` |
 | `$mulla->webhookEndpoint` | `create`, `retrieve`, `update`, `rotateSecret`, `test` |
 | `$mulla->referenceData` | `banks`, `bankBranches`, `countries`, `currencies`, `scopes` |
@@ -154,7 +154,7 @@ Every exception extends `Mulla\Exceptions\MullaException`:
 | `ConflictException` / `IdempotencyException` | 409: payment in progress / idempotency key already used |
 | `RateLimitException` | 429: see `getRetryAfter()` |
 | `ApiServerException` | 5xx |
-| `ConnectionException` | network problem, no response |
+| `ConnectionException` | network problem, no response. Check `requestMayHaveBeenSent()` |
 | `SignatureVerificationException` | invalid webhook signature |
 | `InvalidArgumentException` | bad SDK usage, raised before any request |
 
@@ -168,14 +168,41 @@ try {
 }
 ```
 
+### Retries and duplicate payments
+
+The SDK retries automatically, but only when it is sure nothing is charged twice:
+
+| Request | Retried on |
+|---|---|
+| Reads (`retrieve`, `list`) | network errors, 408, 429, 500, 502, 503, 504 |
+| Writes (`initiate`, `create`, `pay`, …) | 429 and 503 (rejected before processing), or a connection that was never established |
+
+A write that times out, or fails with a 500, is **not** retried, because Mulla may already have
+sent the payment prompt or the payout. When that happens, check before sending it again:
+
+```php
+try {
+    $charge = $mulla->charges->initiate($params, ['idempotency_key' => $order->mulla_key]);
+} catch (ConnectionException $e) {
+    if ($e->requestMayHaveBeenSent()) {
+        // Look the charge up (e.g. by your reference) or wait for the webhook
+        // before asking the customer to pay again.
+    }
+}
+```
+
+Store the idempotency key with your order and reuse it. If the first attempt went through, a repeat
+with the same key is rejected with `IdempotencyException` instead of creating a second charge.
+Keys must be UUIDs (`Mulla\Support\Uuid::v4()`).
+
 ## Configuration
 
 ```php
 $mulla = new MullaClient('sk_live_...', [
-    'baseUrl'        => 'https://core.mulla.app/gateway', // optional: defaults from the key
+    'baseUrl'        => 'https://core.mulla.app/gateway', // optional: defaults from the key; must be https
     'timeout'        => 30,          // seconds
     'connectTimeout' => 10,
-    'maxRetries'     => 2,           // network errors, 429 and 5xx; 0 disables
+    'maxRetries'     => 2,           // see "Retries and duplicate payments"; 0 disables
     'lang'           => 'fr',        // en, fr, rw, sw: language of API messages
     'appInfo'        => 'my-shop/1.4', // appended to the User-Agent
     'logger'         => $psr3Logger, // any PSR-3 logger or callable; keys are never logged
@@ -188,7 +215,7 @@ Per-request options go in the last argument of every method:
 
 ```php
 $mulla->charges->initiate($params, [
-    'idempotency_key' => $myUuid, // make your own retries safe
+    'idempotency_key' => $myUuid, // a UUID stored with your order, reused on your own retries
     'lang'            => 'rw',
     'timeout'         => 60,
 ]);
@@ -203,6 +230,16 @@ $mulla = new MullaClient('sk_test_...', [
     'transport' => new Psr18Transport(new \GuzzleHttp\Client(['timeout' => 30]), new \GuzzleHttp\Psr7\HttpFactory()),
 ]);
 ```
+
+### Security notes
+
+- The base URL must use `https://`. Plain `http://` is accepted only for local development hosts
+  (`localhost`, `127.0.0.1`, `*.test`, `host.docker.internal`).
+- The secret key never appears in logs, exception messages or `var_dump`/`print_r` output.
+  Checkout tokens are masked (`token=***`) in logs and errors.
+- TLS certificates are always verified. Extra cURL options passed to `CurlTransport` (proxy, CA bundle)
+  cannot switch verification off.
+- Webhook signatures are compared in constant time. Always verify them before trusting an event.
 
 ## Testing your integration
 
