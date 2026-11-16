@@ -12,7 +12,8 @@ use PHPUnit\Framework\TestCase;
 /**
  * Runs against a real Mulla server (local docker stack or sandbox). Skipped unless configured:
  *
- *   MULLA_SECRET_KEY=sk_test_... MULLA_BASE_URL=http://localhost:5605/gateway/v1 composer test:integration
+ *   MULLA_SECRET_KEY=sk_test_... composer test:integration                       (sandbox, mfs.kayko.dev)
+ *   MULLA_SECRET_KEY=sk_test_... MULLA_BASE_URL=http://localhost:5605/gateway composer test:integration   (local stack)
  *
  * Optional: MULLA_TEST_PHONE=2507... also initiates a real (sandbox) charge.
  */
@@ -23,8 +24,8 @@ final class LiveApiTest extends TestCase
     protected function setUp(): void
     {
         $key = getenv('MULLA_SECRET_KEY');
-        if (!is_string($key) || $key === '' || !getenv('MULLA_BASE_URL')) {
-            self::markTestSkipped('Set MULLA_SECRET_KEY and MULLA_BASE_URL to run integration tests.');
+        if (!is_string($key) || $key === '') {
+            self::markTestSkipped('Set MULLA_SECRET_KEY to run integration tests (MULLA_BASE_URL is optional).');
         }
 
         $this->mulla = new MullaClient($key, ['maxRetries' => 1]);

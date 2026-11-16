@@ -14,7 +14,7 @@ final class V1SignatureVerifier implements SignatureVerifierInterface
 {
     public const HEADER = 'x-webhook-signature';
 
-    public static function sign(string $payload, string $secret): string
+    public static function sign(string $payload, #[\SensitiveParameter] string $secret): string
     {
         return hash_hmac('sha512', $payload, $secret);
     }
@@ -24,7 +24,7 @@ final class V1SignatureVerifier implements SignatureVerifierInterface
         return isset($headers[self::HEADER]);
     }
 
-    public function verify(string $payload, array $headers, string $secret): void
+    public function verify(string $payload, array $headers, #[\SensitiveParameter] string $secret): void
     {
         $given = strtolower(trim($headers[self::HEADER] ?? ''));
         if ($given === '' || !hash_equals(self::sign($payload, $secret), $given)) {

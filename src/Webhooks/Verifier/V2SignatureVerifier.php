@@ -31,7 +31,7 @@ final class V2SignatureVerifier implements SignatureVerifierInterface
         $this->clock = $clock ?? static fn(): int => time();
     }
 
-    public static function sign(string $payload, string $secret, int $timestamp): string
+    public static function sign(string $payload, #[\SensitiveParameter] string $secret, int $timestamp): string
     {
         return hash_hmac('sha512', $timestamp . '.' . $payload, $secret);
     }
@@ -41,7 +41,7 @@ final class V2SignatureVerifier implements SignatureVerifierInterface
         return isset($headers[self::SIGNATURE_HEADER]);
     }
 
-    public function verify(string $payload, array $headers, string $secret): void
+    public function verify(string $payload, array $headers, #[\SensitiveParameter] string $secret): void
     {
         $timestamp = $headers[self::TIMESTAMP_HEADER] ?? '';
         if (!ctype_digit($timestamp)) {

@@ -23,5 +23,5 @@ interface SignatureVerifierInterface
      *
      * @throws SignatureVerificationException
      */
-    public function verify(string $payload, array $headers, string $secret): void;
+    public function verify(string $payload, array $headers, #[\SensitiveParameter] string $secret): void;
 }

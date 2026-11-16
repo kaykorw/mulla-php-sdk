@@ -15,6 +15,8 @@ use Mulla\Params\CustomerParams;
  */
 final class CustomerService extends AbstractService
 {
+    protected const SCOPE = \Mulla\Enums\ApiScope::CUSTOMERS;
+
     /**
      * @param CustomerParams|array{full_name: string, email?: string, phone?: string, address?: string, company_name?: string, country_of_origin?: string, city?: string, metadata?: array<string, mixed>} $params
      * @param RequestOptions|array<string, mixed>|null $options

@@ -15,6 +15,8 @@ use Mulla\Params\InitiateRechargeParams;
  */
 final class RechargeService extends AbstractService
 {
+    protected const SCOPE = \Mulla\Enums\ApiScope::RECHARGES;
+
     /**
      * @param InitiateRechargeParams|array{provider: \Mulla\Enums\Provider|string, amount: int|float, phone_number: string, reason?: string, metadata?: array<string, mixed>} $params
      * @param RequestOptions|array<string, mixed>|null $options

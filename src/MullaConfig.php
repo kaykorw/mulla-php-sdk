@@ -50,6 +50,7 @@ final class MullaConfig
      * @param callable(float): void     $sleeper
      */
     private function __construct(
+        #[\SensitiveParameter]
         public readonly string $apiKey,
         public readonly Environment $environment,
         public readonly string $baseUrl,
@@ -70,7 +71,7 @@ final class MullaConfig
     /**
      * @param array<string, mixed> $options see class docblock
      */
-    public static function create(string $apiKey, array $options = []): self
+    public static function create(#[\SensitiveParameter] string $apiKey, array $options = []): self
     {
         $unknown = array_diff(array_keys($options), self::ALLOWED_OPTIONS);
         if ($unknown !== []) {
@@ -152,7 +153,7 @@ final class MullaConfig
         return 'sk_' . $this->environment->value . '_' . self::keyId($this->apiKey) . '_****';
     }
 
-    private static function keyId(string $apiKey): string
+    private static function keyId(#[\SensitiveParameter] string $apiKey): string
     {
         $parts = explode('_', $apiKey);
 

@@ -15,11 +15,11 @@ enum Environment: string
     case Live = 'live';
     case Test = 'test';
 
-    public static function fromApiKey(string $apiKey): self
+    public static function fromApiKey(#[\SensitiveParameter] string $apiKey): self
     {
         if (preg_match('/^sk_(live|test)_[A-Za-z0-9]+_/', $apiKey, $m) !== 1) {
             throw new InvalidArgumentException(
-                'Invalid Mulla secret key. Expected a key starting with "sk_live_" or "sk_test_".',
+                'Invalid Mulla secret key. Expected the format "sk_test_<id>_<secret>" or "sk_live_<id>_<secret>".',
             );
         }
 

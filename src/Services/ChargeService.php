@@ -17,6 +17,8 @@ use Mulla\Params\InitiateChargeParams;
  */
 final class ChargeService extends AbstractService
 {
+    protected const SCOPE = \Mulla\Enums\ApiScope::CHARGES;
+
     /**
      * Sends a payment prompt to the customer's phone. Returns a PENDING charge;
      * wait for the webhook or call waitForFinalStatus().

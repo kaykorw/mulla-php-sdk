@@ -10,7 +10,6 @@ use Mulla\Models\WebhookTestResult;
 
 /**
  * Configure where Mulla sends webhooks (one endpoint per merchant).
- * Requires the WEBHOOKS scope.
  */
 final class WebhookEndpointService extends AbstractService
 {

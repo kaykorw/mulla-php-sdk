@@ -30,6 +30,7 @@ final class Webhook
      * @param list<SignatureVerifierInterface>|null $verifiers defaults to [v2 (timestamped), v1]
      */
     public function __construct(
+        #[\SensitiveParameter]
         private readonly string $secret,
         int $toleranceSeconds = 300,
         ?array $verifiers = null,
@@ -45,7 +46,7 @@ final class Webhook
      *
      * @throws SignatureVerificationException
      */
-    public static function constructEvent(string $payload, array|string $headers, string $secret, int $toleranceSeconds = 300): Event
+    public static function constructEvent(string $payload, array|string $headers, #[\SensitiveParameter] string $secret, int $toleranceSeconds = 300): Event
     {
         return (new self($secret, $toleranceSeconds))->parse($payload, $headers);
     }

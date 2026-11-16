@@ -15,6 +15,8 @@ use Mulla\Params\CreatePayoutParams;
  */
 final class PayoutService extends AbstractService
 {
+    protected const SCOPE = \Mulla\Enums\ApiScope::PAYOUTS;
+
     /**
      * The amount is reserved from your balance immediately.
      * Throws InvalidRequestException (INSUFFICIENT_BALANCE) when your balance is too low.

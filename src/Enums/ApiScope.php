@@ -11,5 +11,4 @@ enum ApiScope: string
     case INVOICES = 'INVOICES';
     case RECHARGES = 'RECHARGES';
     case CUSTOMERS = 'CUSTOMERS';
-    case WEBHOOKS = 'WEBHOOKS';
 }

@@ -19,6 +19,8 @@ use Mulla\Params\InvoiceParams;
  */
 final class InvoiceService extends AbstractService
 {
+    protected const SCOPE = \Mulla\Enums\ApiScope::INVOICES;
+
     /**
      * @param InvoiceParams|array<string, mixed> $params customer + items are required
      * @param RequestOptions|array<string, mixed>|null $options

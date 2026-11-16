@@ -110,7 +110,7 @@ $page = $mulla->charges->list(['limit' => 20]); // one page: $page->data, $page-
 | `$mulla->webhookEndpoint` | `create`, `retrieve`, `update`, `rotateSecret`, `test` |
 | `$mulla->referenceData` | `banks`, `bankBranches`, `countries`, `currencies`, `scopes` |
 
-Each service needs the matching scope on your API key (CHARGES, PAYOUTS, INVOICES, RECHARGES, CUSTOMERS, WEBHOOKS).
+Each service needs the matching scope on your API key (CHARGES, PAYOUTS, INVOICES, RECHARGES, CUSTOMERS).
 
 ## Webhooks
 

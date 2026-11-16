@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Mulla\Services;
 
+use Mulla\Enums\ApiScope;
 use Mulla\Exceptions\InvalidArgumentException;
+use Mulla\Exceptions\PermissionException;
 use Mulla\Http\ApiRequestor;
 use Mulla\Http\RequestOptions;
 use Mulla\Models\AbstractModel;
@@ -21,10 +23,52 @@ use Mulla\Support\Normalizer;
  */
 abstract class AbstractService
 {
+    protected const SCOPE = null;
+
     public function __construct(
         protected readonly ApiRequestor $requestor,
         protected readonly MullaConfig $config,
     ) {}
+
+    /**
+     * Sends a request and, when the key lacks a scope, says which one.
+     *
+     * @param array<string, mixed>      $query
+     * @param array<string, mixed>|null $body
+     * @return array<mixed>|null
+     */
+    protected function call(string $method, string $path, array $query, ?array $body, RequestOptions $options): ?array
+    {
+        try {
+            return $this->requestor->request($method, $path, $query, $body, $options);
+        } catch (PermissionException $e) {
+            throw $this->explainScope($e);
+        }
+    }
+
+    private function explainScope(PermissionException $e): PermissionException
+    {
+        if ($e->getErrorCode() !== 'API_KEY_SCOPE_DENIED') {
+            return $e;
+        }
+
+        $body = $e->getBody() ?? [];
+        $scope = $body['requiredScope'] ?? $body['required_scope'] ?? (is_array($body['missing'] ?? null) ? implode(', ', $body['missing']) : null);
+        $scope = is_string($scope) && $scope !== '' ? $scope : (static::SCOPE instanceof ApiScope ? static::SCOPE->value : null);
+        if ($scope === null) {
+            return $e;
+        }
+
+        return new PermissionException(
+            $e->getMessage() . " Required scope: {$scope}.",
+            $e->getStatusCode(),
+            $e->getErrorCode(),
+            $e->getBody(),
+            $e->getHeaders(),
+            $e->getRawBody(),
+            $e,
+        );
+    }
 
     /**
      * @template T of AbstractModel
@@ -73,12 +117,12 @@ abstract class AbstractService
     {
         $requestOptions = RequestOptions::from($options);
         $fetch = function (int $page) use ($model, $path, $filters, $requestOptions): Collection {
-            $response = $this->requestor->request('GET', $path, ['page' => $page] + $filters, null, $requestOptions);
+            $response = $this->call('GET', $path, ['page' => $page] + $filters, null, $requestOptions);
 
             return Collection::fromResponse($model, $response);
         };
 
-        $response = $this->requestor->request('GET', $path, $filters, null, $requestOptions);
+        $response = $this->call('GET', $path, $filters, null, $requestOptions);
 
         return Collection::fromResponse($model, $response, $fetch);
     }
@@ -93,7 +137,7 @@ abstract class AbstractService
      */
     protected function send(string $model, string $method, string $path, array $query, ?array $body, RequestOptions|array|null $options): AbstractModel
     {
-        $response = $this->requestor->request($method, $path, $query, $body, RequestOptions::from($options));
+        $response = $this->call($method, $path, $query, $body, RequestOptions::from($options));
 
         return ModelFactory::make($model, $response);
     }

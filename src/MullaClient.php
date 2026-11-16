@@ -39,7 +39,7 @@ final class MullaClient
      * @param string               $apiKey  your secret key (sk_test_... or sk_live_...)
      * @param array<string, mixed> $options see MullaConfig for every option
      */
-    public function __construct(string $apiKey, array $options = [])
+    public function __construct(#[\SensitiveParameter] string $apiKey, array $options = [])
     {
         $this->config = MullaConfig::create($apiKey, $options);
         $this->services = new ServiceFactory(new ApiRequestor($this->config), $this->config);
@@ -75,7 +75,7 @@ final class MullaClient
         return $this->config;
     }
 
-    public function webhooks(string $secret, int $toleranceSeconds = 300): Webhook
+    public function webhooks(#[\SensitiveParameter] string $secret, int $toleranceSeconds = 300): Webhook
     {
         return new Webhook($secret, $toleranceSeconds);
     }
