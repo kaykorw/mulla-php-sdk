@@ -16,6 +16,11 @@ final class AuthMiddleware implements MiddlewareInterface
 
     public function __construct(#[\SensitiveParameter] private readonly string $apiKey) {}
 
+    public function __debugInfo(): array
+    {
+        return ['apiKey' => '****'];
+    }
+
     public function handle(Request $request, callable $next): Response
     {
         return $next($request->withHeader(self::HEADER, $this->apiKey));

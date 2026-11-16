@@ -172,6 +172,9 @@ abstract class AbstractService
         if (trim($id) === '') {
             throw new InvalidArgumentException("The {$label} cannot be empty.");
         }
+        if ($id === '.' || $id === '..') {
+            throw new InvalidArgumentException("The {$label} \"{$id}\" is not valid.");
+        }
 
         return rawurlencode($id);
     }

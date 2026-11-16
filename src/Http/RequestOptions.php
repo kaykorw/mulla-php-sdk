@@ -22,7 +22,13 @@ final class RequestOptions
         public readonly ?string $lang = null,
         public readonly ?float $timeout = null,
         public readonly array $headers = [],
-    ) {}
+    ) {
+        if ($idempotencyKey !== null && preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $idempotencyKey) !== 1) {
+            throw new InvalidArgumentException(
+                'The "idempotency_key" must be a UUID (e.g. Mulla\Support\Uuid::v4()). Store it with your order so retries reuse it.',
+            );
+        }
+    }
 
     /**
      * @param RequestOptions|array{idempotency_key?: string, lang?: string, timeout?: float, headers?: array<string, string>}|null $options

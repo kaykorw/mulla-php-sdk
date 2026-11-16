@@ -7,9 +7,11 @@ namespace Mulla\Http\Middleware;
 use Mulla\Exceptions\ConnectionException;
 use Mulla\Http\Request;
 use Mulla\Http\Response;
+use Mulla\Support\Redactor;
 
 /**
- * Logs every attempt (method, URL, status, duration). Never logs the API key or bodies.
+ * Logs every attempt (method, URL, status, duration). Never logs the API key, bodies,
+ * or secret query values such as checkout tokens.
  *
  * Accepts a PSR-3 logger (any object with a log($level, $message, $context) method)
  * or a callable fn(string $level, string $message, array $context).
@@ -32,9 +34,10 @@ final class LoggingMiddleware implements MiddlewareInterface
     public function handle(Request $request, callable $next): Response
     {
         $start = microtime(true);
+        $url = Redactor::url($request->url);
         $context = [
             'method' => $request->method,
-            'url' => $request->url,
+            'url' => $url,
             'attempt' => $request->attribute('attempt', 1),
             'idempotency_key' => $request->header(IdempotencyMiddleware::HEADER),
         ];
@@ -54,7 +57,7 @@ final class LoggingMiddleware implements MiddlewareInterface
             'duration_ms' => $this->elapsed($start),
         ];
         $level = $response->isSuccessful() ? 'debug' : ($response->statusCode >= 500 ? 'error' : 'warning');
-        ($this->log)($level, sprintf('Mulla %s %s -> %d', $request->method, $request->url, $response->statusCode), $context);
+        ($this->log)($level, sprintf('Mulla %s %s -> %d', $request->method, $url, $response->statusCode), $context);
 
         return $response;
     }

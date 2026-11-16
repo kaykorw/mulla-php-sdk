@@ -10,8 +10,9 @@ use Mulla\Http\Response;
 use Mulla\Http\Retry\RetryStrategyInterface;
 
 /**
- * Re-sends failed requests according to a RetryStrategy.
- * Safe for POSTs because IdempotencyMiddleware runs first and fixes the key.
+ * Re-sends failed requests according to a RetryStrategy. IdempotencyMiddleware runs first,
+ * so every attempt carries the same idempotency key. Which writes are safe to repeat is
+ * decided by the strategy (see ExponentialBackoff).
  */
 final class RetryMiddleware implements MiddlewareInterface
 {
@@ -42,7 +43,7 @@ final class RetryMiddleware implements MiddlewareInterface
                 $error = $e;
             }
 
-            if (!$this->strategy->shouldRetry($attempt, $response, $error)) {
+            if (!$this->strategy->shouldRetry($request, $attempt, $response, $error)) {
                 if ($error !== null) {
                     throw $error;
                 }

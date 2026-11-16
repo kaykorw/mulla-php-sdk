@@ -40,9 +40,15 @@ final class FakeTransport implements TransportInterface
         return $this->pushJson(['statusCode' => $status, 'message' => $message, 'errorCode' => $errorCode] + $extra, $status);
     }
 
-    public function pushConnectionError(string $message = 'Connection refused'): self
+    /**
+     * Queue a network failure.
+     *
+     * @param bool $requestMayHaveBeenSent false = connection never made (safe to retry writes),
+     *                                     true  = e.g. response timeout (Mulla may have processed it)
+     */
+    public function pushConnectionError(string $message = 'Connection refused', bool $requestMayHaveBeenSent = false): self
     {
-        return $this->push(new ConnectionException($message));
+        return $this->push(new ConnectionException($message, 0, null, $requestMayHaveBeenSent));
     }
 
     /** @param Response|\Throwable|callable(Request): Response $response */

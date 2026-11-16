@@ -41,11 +41,46 @@ final class DefaultEnvironmentResolver implements EnvironmentResolverInterface
             ));
         }
 
-        if (filter_var($url, FILTER_VALIDATE_URL) === false) {
-            throw new InvalidArgumentException("The Mulla base URL \"{$url}\" is not a valid URL.");
-        }
+        self::assertSafeUrl($url);
 
         return self::withVersion($url);
+    }
+
+    /**
+     * The secret key travels in every request, so the URL must use HTTPS.
+     * Plain HTTP is allowed only for local development hosts.
+     */
+    private static function assertSafeUrl(string $url): void
+    {
+        $parts = filter_var($url, FILTER_VALIDATE_URL) !== false ? parse_url($url) : false;
+        if ($parts === false || !isset($parts['scheme'], $parts['host'])) {
+            throw new InvalidArgumentException("The Mulla base URL \"{$url}\" is not a valid URL.");
+        }
+        if (isset($parts['user']) || isset($parts['pass']) || isset($parts['query']) || isset($parts['fragment'])) {
+            throw new InvalidArgumentException('The Mulla base URL must not contain credentials, a query string or a fragment.');
+        }
+
+        $scheme = strtolower($parts['scheme']);
+        $host = strtolower(trim($parts['host'], '[]'));
+        if ($scheme === 'https') {
+            return;
+        }
+        if ($scheme === 'http' && self::isLocalHost($host)) {
+            return;
+        }
+
+        throw new InvalidArgumentException(sprintf(
+            'The Mulla base URL must use https:// (got "%s://%s"). Plain http is only allowed for localhost.',
+            $scheme,
+            $host,
+        ));
+    }
+
+    private static function isLocalHost(string $host): bool
+    {
+        return in_array($host, ['localhost', '127.0.0.1', '::1', 'host.docker.internal'], true)
+            || str_ends_with($host, '.localhost')
+            || str_ends_with($host, '.test');
     }
 
     /**

@@ -148,6 +148,15 @@ final class MullaConfig
         );
     }
 
+    /** Keeps the secret key out of var_dump/print_r output and framework error pages. */
+    public function __debugInfo(): array
+    {
+        $info = get_object_vars($this);
+        $info['apiKey'] = $this->maskedApiKey();
+
+        return $info;
+    }
+
     public function maskedApiKey(): string
     {
         return 'sk_' . $this->environment->value . '_' . self::keyId($this->apiKey) . '_****';

@@ -6,6 +6,7 @@ namespace Mulla\Http;
 
 use Mulla\Exceptions\ApiException;
 use Mulla\Exceptions\ExceptionFactory;
+use Mulla\Exceptions\InvalidArgumentException;
 use Mulla\Http\Middleware\AuthMiddleware;
 use Mulla\Http\Middleware\ClientContextMiddleware;
 use Mulla\Http\Middleware\IdempotencyMiddleware;
@@ -66,11 +67,17 @@ final class ApiRequestor
             $headers['accept-language'] = $options->lang;
         }
 
+        try {
+            $json = $body !== null ? json_encode((object) $body, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) : null;
+        } catch (\JsonException $e) {
+            throw new InvalidArgumentException('Could not encode the request parameters as JSON: ' . $e->getMessage() . '. Check that all strings are valid UTF-8.', 0, $e);
+        }
+
         $request = new Request(
             method: strtoupper($method),
             url: $this->config->baseUrl . '/' . ltrim($path, '/') . Normalizer::query($query),
             headers: $headers,
-            body: $body !== null ? json_encode((object) $body, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) : null,
+            body: $json,
             timeout: $options->timeout ?? $this->config->timeout,
             connectTimeout: $this->config->connectTimeout,
         );
