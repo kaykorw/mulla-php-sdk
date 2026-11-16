@@ -32,7 +32,7 @@ $charge = $mulla->charges->initiate([
     'metadata'     => ['order_id' => 1001],
 ]);
 
-// The customer approves the prompt on their phone.
+// The customer approves the prompt on their device.
 // Mulla then sends you a webhook, or you can poll:
 $charge = $mulla->charges->waitForFinalStatus($charge->id);
 
@@ -43,18 +43,7 @@ if ($charge->isSuccessful()) {
 
 Test keys (`sk_test_...`) only work on the sandbox server and live keys (`sk_live_...`) only on production.
 
-## How payments work
-
-Mobile money payments are **asynchronous**:
-
-1. You create a charge. Mulla sends a payment prompt to the customer's phone, and the charge is `PENDING`.
-2. The customer approves (or declines) on their phone.
-3. The charge becomes `SUCCESSFUL`, `FAILED`, or `EXPIRED` after 10 minutes without approval.
-4. Mulla notifies you with a webhook (`charge.success` / `charge.failed`).
-
-Use **webhooks** in production. Use `waitForFinalStatus()` for scripts, CLIs, or as a fallback.
-
-## Usage
+## Important Usage: Good to know
 
 ### Builders or arrays: your choice
 
@@ -179,7 +168,7 @@ try {
 
 ```php
 $mulla = new MullaClient('sk_live_...', [
-    'baseUrl'        => 'https://<mulla-host>/gateway/v1',
+    'baseUrl'        => 'https://mfs.kayko.dev/gateway/v1',
     'timeout'        => 30,          // seconds
     'connectTimeout' => 10,
     'maxRetries'     => 2,           // network errors, 429 and 5xx; 0 disables
@@ -200,10 +189,6 @@ $mulla->charges->initiate($params, [
     'timeout'         => 60,
 ]);
 ```
-
-### Idempotency and retries
-
-Every POST automatically gets an `x-idempotency-key`, and the SDK reuses it when it retries. To make **your own** retries safe (for example a queued job that might run twice), pass a UUID derived from your order as `idempotency_key`. If the key was already used, you get an `IdempotencyException`; fetch the existing resource instead of re-sending.
 
 ### Using Guzzle or another PSR-18 client
 
@@ -250,22 +235,6 @@ composer cs                 # code style (php-cs-fixer --dry-run)
 # Against a real server (local docker stack or sandbox):
 MULLA_SECRET_KEY=sk_test_... MULLA_BASE_URL=http://localhost:5605/gateway/v1 composer test:integration
 ```
-
-### Architecture
-
-The SDK uses the same structure as every official Mulla SDK:
-
-| Pattern | Where |
-|---|---|
-| Facade | `MullaClient` |
-| Factory | `ServiceFactory`, `ModelFactory`, `ExceptionFactory` |
-| Adapter | `Http/Transport/*` (cURL, PSR-18, or your own) |
-| Chain of Responsibility | `Http/Middleware/*`: client context, auth, idempotency, retry, logging |
-| Strategy | `Http/Retry/*`, `Environment/*`, `Webhooks/Verifier/*` |
-| Template Method | `Services/AbstractService`, `Models/AbstractModel::hydrate` |
-| Builder | `Params/*` |
-| Iterator | `Models/Collection` |
-| Observer | `Webhooks/EventDispatcher` |
 
 ## License
 
