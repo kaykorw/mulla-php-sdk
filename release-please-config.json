@@ -1,0 +1,19 @@
+{
+    "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+    "bootstrap-sha": "8d916443f72300d8752cd21fed776a03499a2c57",
+    "packages": {
+        ".": {
+            "release-type": "php",
+            "package-name": "kayko/mulla-php",
+            "include-component-in-tag": false,
+            "bump-minor-pre-major": true,
+            "changelog-path": "CHANGELOG.md",
+            "extra-files": [
+                {
+                    "type": "generic",
+                    "path": "src/Version.php"
+                }
+            ]
+        }
+    }
+}
