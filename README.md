@@ -11,7 +11,7 @@ Official PHP library for the Mulla payment gateway. Accept **MTN Mobile Money** 
 ## Installation
 
 ```bash
-composer require mulla/mulla-php
+composer require kayko/mulla-php
 ```
 
 ## Quick start
