@@ -3,6 +3,13 @@
 All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.0.2](https://github.com/kaykorw/mulla-php-sdk/compare/v0.0.1...v0.0.2) (2026-11-19)
+
+
+### Miscellaneous Chores
+
+* Update release-please configuration to include README.md as an extra file ([579d996](https://github.com/kaykorw/mulla-php-sdk/commit/579d9961ddda641830d381787c9f88d59b5421a6))
+
 ## [0.0.1] - Unreleased
 
 ### Added
