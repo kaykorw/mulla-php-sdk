@@ -3,7 +3,16 @@
     "description": "Official PHP SDK for the Mulla payment gateway (MTN MoMo & Airtel Money, Rwanda).",
     "type": "library",
     "license": "MIT",
-    "keywords": ["mulla", "payments", "mobile money", "momo", "mtn", "airtel", "rwanda", "payment gateway"],
+    "keywords": [
+        "mulla",
+        "payments",
+        "mobile money",
+        "momo",
+        "mtn",
+        "airtel",
+        "rwanda",
+        "payment gateway"
+    ],
     "homepage": "https://github.com/kaykorw/mulla-php-sdk",
     "require": {
         "php": ">=8.1",
@@ -35,7 +44,11 @@
         "analyse": "phpstan analyse --memory-limit=1G",
         "cs": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix",
-        "check": ["@cs", "@analyse", "@test"]
+        "check": [
+            "@cs",
+            "@analyse",
+            "@test"
+        ]
     },
     "config": {
         "sort-packages": true
