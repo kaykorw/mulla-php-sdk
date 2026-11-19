@@ -102,7 +102,7 @@ $mulla = new MullaClient(getenv('MULLA_SECRET_KEY'));
 $charge = $mulla->charges->initiate([
     'provider'     => Provider::MTN_RW,
     'amount'       => 5000, // RWF
-    'phone_number' => '250788000000',
+    'phone_number' => '+250788000000',
     'reason'       => 'Order #1001',
 ]);
 
@@ -163,7 +163,7 @@ To use another server (for example a local one), set the `baseUrl` option or `MU
 ### Amounts, phone numbers and field names
 
 - **Amounts** are whole Rwandan francs (RWF), not cents. The minimum is 10.
-- **Phone numbers** use the international format without `+`, for example `250788000000`.
+- **Phone numbers** must use the international format with `+`, for example `+250788000000`. Other formats (`250788000000`, `0788000000`) are rejected with `VALIDATION_FAILED`.
 - **Arrays use the API's field names** in snake_case (`phone_number`, `success_url`). The API rejects unknown fields, so a typo fails with an `InvalidRequestException`.
 - **Builders are optional.** Each params class (`InitiateChargeParams`, `CreatePayoutParams`…) gives you autocompletion and checks required fields before sending:
 
@@ -173,7 +173,7 @@ use Mulla\Params\InitiateChargeParams;
 $charge = $mulla->charges->initiate(
     InitiateChargeParams::make()
         ->provider(Provider::AIRTEL_RW)
-        ->phoneNumber('250730000000')
+        ->phoneNumber('+250730000000')
         ->amount(1000)
         ->metadata(['order_id' => 1001])
 );
@@ -207,7 +207,7 @@ Use this when your app already knows the customer's network and phone number.
 $charge = $mulla->charges->initiate([
     'provider'     => Provider::AIRTEL_RW,
     'amount'       => 12000,
-    'phone_number' => '250730000000',
+    'phone_number' => '+250730000000',
     'reason'       => 'Order #1001',          // shown to the customer
     'metadata'     => ['order_id' => 1001],   // your own data, kept with the charge
 ]);
@@ -335,7 +335,7 @@ A payout sends money from your Mulla balance to a mobile money wallet. You need 
 $payout = $mulla->payouts->initiate([
     'provider'     => Provider::MTN_RW,
     'amount'       => 15000,
-    'phone_number' => '250788000000',
+    'phone_number' => '+250788000000',
     'reason'       => 'Refund for order #1001', // required
 ]);
 ```
@@ -352,7 +352,7 @@ A recharge moves money from a mobile money wallet into your Mulla balance, for e
 $recharge = $mulla->recharges->initiate([
     'provider'     => Provider::MTN_RW,
     'amount'       => 100000,
-    'phone_number' => '250788000000', // the wallet that pays
+    'phone_number' => '+250788000000', // the wallet that pays
 ]);
 
 $recharge = $mulla->recharges->waitForFinalStatus($recharge->id);
@@ -370,7 +370,7 @@ use Mulla\Params\InvoiceParams;
 $customer = $mulla->customers->create([
     'full_name' => 'Jane Doe',
     'email'     => 'jane@example.com',
-    'phone'     => '250788000000',
+    'phone'     => '+250788000000',
 ]);
 
 $invoice = $mulla->invoices->create(
@@ -385,7 +385,7 @@ $invoice = $mulla->invoices->create(
 **2. Collect the payment.** This sends a payment prompt to the customer's phone:
 
 ```php
-$mulla->invoices->pay($invoice->id, Provider::MTN_RW, '250788000000');
+$mulla->invoices->pay($invoice->id, Provider::MTN_RW, '+250788000000');
 ```
 
 **3. Track it.** You get an `invoice.paid` webhook once it's fully paid (`$invoice->isPaid()`). To see every payment attempt, call `$mulla->invoices->listPayments($invoice->id)`.
@@ -656,6 +656,7 @@ $mulla = new MullaClient(getenv('MULLA_SECRET_KEY'), [
 | `PermissionException` with `API_KEY_SCOPE_DENIED`              | The key lacks the scope for that service. Add it in the dashboard.                                                        |
 | `PermissionException` with `API_KEY_ENVIRONMENT_MISMATCH`      | A test key is calling production, or the other way round. Remove `baseUrl` and let the key decide.                        |
 | `PermissionException` with `API_KEY_IP_DENIED`                 | Your server's IP isn't on the key's allowlist.                                                                            |
+| `VALIDATION_FAILED` with "Invalid Phone Number"                | The number has no leading `+`. Send `+250788000000`, not `250788000000` or `0788000000`.                                  |
 | `InvalidRequestException` with `VALIDATION_FAILED`             | A field is invalid, misspelled or unknown. Array keys must be snake_case, such as `phone_number`.                         |
 | `TypeError` or `InvalidArgumentException` about the API key    | `getenv('MULLA_SECRET_KEY')` returned `false` because the variable isn't set for this PHP process.                        |
 | `InvalidArgumentException` about the base URL                  | `baseUrl` must use HTTPS, except for local hosts.                                                                         |
