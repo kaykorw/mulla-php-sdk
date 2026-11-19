@@ -12,6 +12,10 @@
                 {
                     "type": "generic",
                     "path": "src/Version.php"
+                },
+                {
+                    "type": "generic",
+                    "path": "README.md"
                 }
             ]
         }
