@@ -15,6 +15,9 @@ enum Environment: string
     case Live = 'live';
     case Test = 'test';
 
+    public const TEST = self::Test;
+    public const PRODUCTION = self::Live;
+
     public static function fromApiKey(#[\SensitiveParameter] string $apiKey): self
     {
         if (preg_match('/^sk_(live|test)_[A-Za-z0-9]+_/', $apiKey, $m) !== 1) {

@@ -65,8 +65,6 @@ abstract class AbstractModel implements \ArrayAccess, \JsonSerializable
         throw new \LogicException(static::class . ' is read-only.');
     }
 
-    // ---- typed readers used by hydrate() -------------------------------------------------
-
     /** @param array<string, mixed> $d */
     protected static function str(array $d, string $key): ?string
     {

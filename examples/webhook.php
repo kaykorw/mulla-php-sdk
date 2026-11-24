@@ -24,18 +24,15 @@ try {
     exit('Invalid signature');
 }
 
-// Mulla retries deliveries: ignore events you already processed.
-// if (alreadyProcessed($event->id)) { http_response_code(200); exit; }
-
 $dispatcher = (new EventDispatcher())
     ->on(WebhookEventType::CHARGE_SUCCESS, function (Event $event): void {
-        // markOrderPaid(chargeId: $event->objectId(), reference: $event->reference());
+        error_log('Paid: ' . $event->objectId() . ' ' . $event->reference());
     })
     ->on(WebhookEventType::CHARGE_FAILED, function (Event $event): void {
-        // markOrderFailed($event->objectId());
+        error_log('Charge failed: ' . $event->objectId());
     })
     ->on(WebhookEventType::PAYOUT_SUCCESS, function (Event $event): void {
-        // markPayoutCompleted($event->objectId());
+        error_log('Payout completed: ' . $event->objectId());
     });
 
 $dispatcher->dispatch($event);

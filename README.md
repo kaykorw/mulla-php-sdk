@@ -93,7 +93,7 @@ MULLA_SECRET_KEY=sk_test_...
 use Mulla\MullaClient;
 use Mulla\Enums\Provider;
 
-$mulla = new MullaClient(getenv('MULLA_SECRET_KEY'));
+$mulla = new MullaClient(['api_key' => getenv('MULLA_SECRET_KEY')]);
 ```
 
 **3. Ask a customer to pay.** Mulla sends a payment prompt to their phone:
@@ -158,7 +158,7 @@ The key prefix decides where requests go. You don't need to configure a URL.
 | `sk_test_` | Sandbox, no real money | `https://mfs.kayko.dev/gateway`  |
 | `sk_live_` | Production, real money | `https://core.mulla.app/gateway` |
 
-To use another server (for example a local one), set the `baseUrl` option or `MULLA_BASE_URL`. You can paste the URL exactly as the dashboard shows it; the SDK adds `/v1`.
+To use another server (for example a local one), set the `base_url` option. You can paste the URL exactly as the dashboard shows it; the SDK adds `/v1`.
 
 ### Amounts, phone numbers and field names
 
@@ -196,7 +196,7 @@ Each guide is a short, complete task. They all start from a client:
 use Mulla\MullaClient;
 use Mulla\Enums\Provider;
 
-$mulla = new MullaClient(getenv('MULLA_SECRET_KEY'));
+$mulla = new MullaClient(['api_key' => getenv('MULLA_SECRET_KEY')]);
 ```
 
 ### Charge a phone number
@@ -475,7 +475,7 @@ use Mulla\MullaClient;
 use Mulla\Testing\FakeTransport;
 
 $fake = (new FakeTransport())->pushJson(['id' => 'chg_1', 'status' => 'PENDING', 'amount' => 5000]);
-$mulla = new MullaClient('sk_test_abc_xyz', ['transport' => $fake]);
+$mulla = new MullaClient(['api_key' => 'sk_test_abc_xyz', 'transport' => $fake]);
 
 checkout($mulla); // your code
 
@@ -531,20 +531,44 @@ Before you switch to real money, check that:
 
 ### Client options
 
-Pass them as the second argument: `new MullaClient($key, $options)`. Unknown options throw an `InvalidArgumentException`.
+Pass one array: `new MullaClient(['api_key' => $key, ...])`. If you only need the key, `new MullaClient('sk_test_...')` works too.
 
-| Option           | Default              | Description                                                                                        |
-| ---------------- | -------------------- | -------------------------------------------------------------------------------------------------- |
-| `baseUrl`        | From the key prefix  | Server URL. Must use HTTPS, except for local hosts such as `localhost`.                            |
-| `timeout`        | `30`                 | Time limit for each request, in seconds.                                                           |
-| `connectTimeout` | `10`                 | Time limit for opening the connection, in seconds.                                                 |
-| `maxRetries`     | `2`                  | Extra attempts for failed requests that are safe to retry. `0` turns retries off.                  |
-| `lang`           | API default          | Language of API messages: `en`, `fr`, `rw` or `sw`.                                                |
-| `appInfo`        | —                    | Your app's name and version (`'my-shop/1.4'`), added to the User-Agent.                            |
-| `logger`         | —                    | Any PSR-3 logger, or `fn (string $level, string $message, array $context)`. Keys are never logged. |
-| `transport`      | `CurlTransport`      | Replaces the HTTP layer, for example with Guzzle (see below) or `FakeTransport` in tests.          |
-| `middleware`     | `[]`                 | Objects that can change requests, for example to add a trace ID.                                   |
-| `deviceId`       | Derived from the key | Sent as the `x-device-id` header.                                                                  |
+- Option names use snake_case. A name the SDK doesn't know throws an `InvalidArgumentException`; if you wrote `baseUrl`, the message suggests `base_url`.
+- `null`, `false` and `''` mean "not set", so a missing `getenv()` value falls back to the default.
+- Every option is checked when the client is created, so a mistake stops your app at startup instead of during a payment.
+
+```php
+$mulla = new MullaClient([
+    'api_key' => getenv('MULLA_SECRET_KEY'),
+    'environment' => Environment::PRODUCTION,
+    'webhook_secret' => getenv('MULLA_WEBHOOK_SECRET'),
+    'webhook_url' => 'https://shop.example/mulla/webhook',
+    'timeout' => 10,
+    'lang' => Language::EN,
+    'app_info' => ['name' => 'my-shop', 'version' => '1.4.0'],
+    'logger' => $psrLogger,
+]);
+```
+
+| Option                 | Default              | Description                                                                                                         |
+| ---------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `api_key`              | — (required)         | Your secret key, `sk_test_...` or `sk_live_...`.                                                                    |
+| `environment`          | From the key         | `Environment::TEST` or `Environment::PRODUCTION`. A safety check: the client refuses a key from the other environment. |
+| `base_url`             | From the key         | Server address. Must use HTTPS, except for local hosts such as `localhost`.                                         |
+| `webhook_secret`       | —                    | Default secret for `$mulla->webhooks()`. Never logged or shown by `var_dump()`.                                     |
+| `webhook_url`          | —                    | Default URL for `$mulla->webhookEndpoint->create()`. Must use HTTPS (plain http only for `localhost`).              |
+| `timeout`              | `30`                 | Time limit for each request, in seconds.                                                                            |
+| `connect_timeout`      | `10`                 | Time limit for opening the connection, in seconds.                                                                  |
+| `max_retries`          | `2`                  | Extra tries for requests that failed for a temporary reason. `0` turns retries off.                                 |
+| `lang`                 | API default          | Language of API messages: `Language::EN`, `FR`, `RW` or `SW` (or `'en'`, ...).                                      |
+| `device_id`            | Made from the key    | A UUID v4, sent as the `x-device-id` header.                                                                        |
+| `app_info`             | —                    | `['name' => ..., 'version' => ..., 'url' => ...]`, added to the User-Agent. Letters, numbers and `. _ ~ @ + -` only. |
+| `logger`               | —                    | Any PSR-3 logger, or `fn (string $level, string $message, array $context)`. Keys are never logged; logger errors are ignored. |
+| `middleware`           | `[]`                 | `fn (Request $request, callable $next): Response` functions or `MiddlewareInterface` objects, run on every request. |
+| `transport`            | `CurlTransport`      | Replaces the part that sends HTTP requests, for example with Guzzle (see below) or `FakeTransport` in tests.         |
+| `retry_strategy`       | Exponential backoff  | Rarely needed: your own retry rules. Can't be combined with `max_retries`.                                          |
+| `environment_resolver` | Official servers     | Rarely needed: your own rules for choosing the server address.                                                      |
+| `sleep`                | `usleep()`           | Rarely needed: how retries wait. Tests pass `fn () => null`.                                                        |
 
 ### Per-request options
 
@@ -559,11 +583,15 @@ Pass them as the last argument of any method, for example `$mulla->charges->init
 
 ### Environment variables
 
-| Variable         | Used for                                      |
-| ---------------- | --------------------------------------------- |
-| `MULLA_BASE_URL` | The server URL, when you don't pass `baseUrl` |
+The SDK never reads environment variables or `.env` files, so a key can't be picked up by accident. Read them in your code and pass them in:
 
-The SDK doesn't read the API key or webhook secret on its own. Pass them in; the examples use `MULLA_SECRET_KEY` and `MULLA_WEBHOOK_SECRET`.
+```php
+$mulla = new MullaClient([
+    'api_key' => getenv('MULLA_SECRET_KEY'),
+    'base_url' => getenv('MULLA_BASE_URL'),
+    'webhook_secret' => getenv('MULLA_WEBHOOK_SECRET'),
+]);
+```
 
 ### Statuses
 
@@ -612,7 +640,7 @@ All of them are in `Mulla\Exceptions` and extend `MullaException`. The ones with
 
 ### Retry rules
 
-The SDK retries a failed request up to `maxRetries` times, waiting longer each time (from 0.5 s up to 8 s). It follows the server's `Retry-After` header when there is one.
+The SDK retries a failed request up to `max_retries` times, waiting longer each time (from 0.5 s up to 8 s). It follows the server's `Retry-After` header when there is one.
 
 | Request                                         | Retried after                                                                        |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------ |
@@ -634,7 +662,8 @@ Methods return typed models (`Charge`, `Payout`, `Invoice`…) with camelCase pr
 ```php
 use Mulla\Http\Transport\Psr18Transport;
 
-$mulla = new MullaClient(getenv('MULLA_SECRET_KEY'), [
+$mulla = new MullaClient([
+    'api_key' => getenv('MULLA_SECRET_KEY'),
     'transport' => new Psr18Transport(new \GuzzleHttp\Client(['timeout' => 30]), new \GuzzleHttp\Psr7\HttpFactory()),
 ]);
 ```
@@ -654,12 +683,12 @@ $mulla = new MullaClient(getenv('MULLA_SECRET_KEY'), [
 | `SignatureVerificationException` after it used to work         | Wrong secret. Test and live endpoints have different secrets, and `rotateSecret()` replaces the old one.                  |
 | Webhook gets `419` or `403` from your framework                | CSRF protection is blocking it. Exclude the webhook route.                                                                |
 | `PermissionException` with `API_KEY_SCOPE_DENIED`              | The key lacks the scope for that service. Add it in the dashboard.                                                        |
-| `PermissionException` with `API_KEY_ENVIRONMENT_MISMATCH`      | A test key is calling production, or the other way round. Remove `baseUrl` and let the key decide.                        |
+| `PermissionException` with `API_KEY_ENVIRONMENT_MISMATCH`      | A test key is calling production, or the other way round. Remove `base_url` and let the key decide.                        |
 | `PermissionException` with `API_KEY_IP_DENIED`                 | Your server's IP isn't on the key's allowlist.                                                                            |
 | `VALIDATION_FAILED` with "Invalid Phone Number"                | The number has no leading `+`. Send `+250788000000`, not `250788000000` or `0788000000`.                                  |
 | `InvalidRequestException` with `VALIDATION_FAILED`             | A field is invalid, misspelled or unknown. Array keys must be snake_case, such as `phone_number`.                         |
 | `TypeError` or `InvalidArgumentException` about the API key    | `getenv('MULLA_SECRET_KEY')` returned `false` because the variable isn't set for this PHP process.                        |
-| `InvalidArgumentException` about the base URL                  | `baseUrl` must use HTTPS, except for local hosts.                                                                         |
+| `InvalidArgumentException` about the base URL                  | `base_url` must use HTTPS, except for local hosts.                                                                         |
 | `waitForFinalStatus()` returns an object that is still pending | It timed out (after 120 seconds by default) and returned the latest state. Rely on webhooks, or raise the timeout.        |
 | Charges end up `EXPIRED`                                       | The customer didn't approve the prompt in time. Ask them to check their phone, then start a new charge.                   |
 

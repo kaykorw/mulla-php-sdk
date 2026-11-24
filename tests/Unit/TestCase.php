@@ -21,10 +21,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->fake = new FakeTransport();
         $this->sleeps = [];
 
-        return new MullaClient(self::KEY, $options + [
-            'baseUrl' => self::BASE,
+        return new MullaClient($options + [
+            'api_key' => self::KEY,
+            'base_url' => self::BASE,
             'transport' => $this->fake,
-            'sleeper' => function (float $s): void {
+            'sleep' => function (float $s): void {
                 $this->sleeps[] = $s;
             },
         ]);

@@ -13,7 +13,7 @@ use Mulla\Exceptions\InvalidRequestException;
 use Mulla\MullaClient;
 use Mulla\Params\CreatePayoutParams;
 
-$mulla = new MullaClient((string) getenv('MULLA_SECRET_KEY'));
+$mulla = new MullaClient(['api_key' => getenv('MULLA_SECRET_KEY')]);
 
 try {
     $payout = $mulla->payouts->initiate(

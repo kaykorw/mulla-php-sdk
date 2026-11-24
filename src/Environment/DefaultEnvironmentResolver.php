@@ -28,15 +28,11 @@ final class DefaultEnvironmentResolver implements EnvironmentResolverInterface
 
     public function resolveBaseUrl(Environment $environment, ?string $configuredBaseUrl): string
     {
-        $env = getenv('MULLA_BASE_URL');
-        $url = $configuredBaseUrl
-            ?? (is_string($env) && $env !== '' ? $env : null)
-            ?? $this->baseUrls[$environment->value]
-            ?? null;
+        $url = $configuredBaseUrl ?? $this->baseUrls[$environment->value] ?? null;
 
         if ($url === null) {
             throw new InvalidArgumentException(sprintf(
-                'No Mulla API URL is configured for the %s environment. Pass the "baseUrl" option',
+                'No Mulla API URL is configured for the %s environment. Pass the "base_url" option.',
                 $environment->value,
             ));
         }
