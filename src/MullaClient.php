@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mulla;
 
 use Mulla\Environment\Environment;
+use Mulla\Exceptions\InvalidArgumentException;
 use Mulla\Http\ApiRequestor;
 use Mulla\Services\AbstractService;
 use Mulla\Services\ChargeService;
@@ -36,12 +37,16 @@ final class MullaClient
     private readonly ServiceFactory $services;
 
     /**
-     * @param string               $apiKey  your secret key (sk_test_... or sk_live_...)
-     * @param array<string, mixed> $options see MullaConfig for every option
+     * @param array<string, mixed>|string $options see MullaConfig for every option, or just the secret key
      */
-    public function __construct(#[\SensitiveParameter] string $apiKey, array $options = [])
+    public function __construct(#[\SensitiveParameter] array|string $options)
     {
-        $this->config = MullaConfig::create($apiKey, $options);
+        if (func_num_args() > 1) {
+            throw new InvalidArgumentException(
+                "MullaClient takes a single options array: new MullaClient(['api_key' => \$secretKey, 'base_url' => ...]).",
+            );
+        }
+        $this->config = MullaConfig::create($options);
         $this->services = new ServiceFactory(new ApiRequestor($this->config), $this->config);
     }
 
@@ -75,8 +80,16 @@ final class MullaClient
         return $this->config;
     }
 
-    public function webhooks(#[\SensitiveParameter] string $secret, int $toleranceSeconds = 300): Webhook
+    /** Webhook verifier using $secret, or the client's "webhook_secret" option when omitted. */
+    public function webhooks(#[\SensitiveParameter] ?string $secret = null, int $toleranceSeconds = 300): Webhook
     {
+        $secret ??= $this->config->webhookSecret();
+        if ($secret === null) {
+            throw new InvalidArgumentException(
+                'No webhook secret. Pass "webhook_secret" to new MullaClient([...]) or call $mulla->webhooks($secret).',
+            );
+        }
+
         return new Webhook($secret, $toleranceSeconds);
     }
 

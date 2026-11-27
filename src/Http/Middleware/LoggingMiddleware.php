@@ -23,12 +23,19 @@ final class LoggingMiddleware implements MiddlewareInterface
 
     public function __construct(callable|object $logger)
     {
-        $this->log = is_callable($logger)
+        $log = is_callable($logger)
             ? $logger
             : static function (string $level, string $message, array $context) use ($logger): void {
                 /** @phpstan-ignore-next-line duck-typed PSR-3 */
                 $logger->log($level, $message, $context);
             };
+        $this->log = static function (string $level, string $message, array $context) use ($log): void {
+            try {
+                $log($level, $message, $context);
+            } catch (\Throwable) {
+                // A failing logger must never break a payment request.
+            }
+        };
     }
 
     public function handle(Request $request, callable $next): Response

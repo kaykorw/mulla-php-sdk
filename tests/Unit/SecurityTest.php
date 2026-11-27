@@ -15,8 +15,6 @@ final class SecurityTest extends TestCase
 {
     private const CHARGE = ['provider' => 'MTN_RW', 'amount' => 100, 'phone_number' => '250788000000'];
 
-    // --- Retries must never duplicate a write -------------------------------------------
-
     public function testWriteIsNotRetriedAfterServerError(): void
     {
         $client = $this->client();
@@ -87,8 +85,6 @@ final class SecurityTest extends TestCase
         self::assertCount(3, $this->fake->requests());
     }
 
-    // --- Secrets stay out of logs and dumps ----------------------------------------------
-
     public function testCheckoutTokenIsRedactedFromLogs(): void
     {
         $logs = [];
@@ -120,8 +116,6 @@ final class SecurityTest extends TestCase
         self::assertStringNotContainsString($secret, print_r($this->fake->lastRequest(), true));
     }
 
-    // --- Base URL ------------------------------------------------------------------------
-
     /** @return iterable<string, array{string}> */
     public static function unsafeUrls(): iterable
     {
@@ -138,7 +132,7 @@ final class SecurityTest extends TestCase
     public function testRejectsUnsafeBaseUrls(string $url): void
     {
         $this->expectException(InvalidArgumentException::class);
-        MullaConfig::create(self::KEY, ['baseUrl' => $url, 'transport' => new FakeTransport()]);
+        MullaConfig::create(['api_key' => self::KEY, 'base_url' => $url, 'transport' => new FakeTransport()]);
     }
 
     /** @return iterable<string, array{string}> */
@@ -154,12 +148,10 @@ final class SecurityTest extends TestCase
     /** @dataProvider localUrls */
     public function testAllowsPlainHttpForLocalDevelopment(string $url): void
     {
-        $config = MullaConfig::create(self::KEY, ['baseUrl' => $url, 'transport' => new FakeTransport()]);
+        $config = MullaConfig::create(['api_key' => self::KEY, 'base_url' => $url, 'transport' => new FakeTransport()]);
 
         self::assertStringEndsWith('/gateway/v1', $config->baseUrl);
     }
-
-    // --- Request input -------------------------------------------------------------------
 
     public function testRejectsHeaderInjection(): void
     {
@@ -212,8 +204,6 @@ final class SecurityTest extends TestCase
         $this->expectExceptionMessage('UTF-8');
         $client->charges->initiate(self::CHARGE + ['reason' => "bad \xB1\x31"]);
     }
-
-    // --- Invoice live events ----------------------------------------------------------------
 
     public function testInvoiceEventsUrl(): void
     {

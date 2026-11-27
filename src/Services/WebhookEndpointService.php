@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mulla\Services;
 
+use Mulla\Exceptions\InvalidArgumentException;
 use Mulla\Http\RequestOptions;
 use Mulla\Models\WebhookEndpoint;
 use Mulla\Models\WebhookTestResult;
@@ -16,10 +17,16 @@ final class WebhookEndpointService extends AbstractService
     /**
      * Store the returned $endpoint->secret: it is shown only once.
      *
+     * @param string|null                              $url     defaults to the client's "webhook_url" option
      * @param RequestOptions|array<string, mixed>|null $options
      */
-    public function create(string $url, bool $isActive = true, RequestOptions|array|null $options = null): WebhookEndpoint
+    public function create(?string $url = null, bool $isActive = true, RequestOptions|array|null $options = null): WebhookEndpoint
     {
+        $url ??= $this->config->webhookUrl;
+        if ($url === null || trim($url) === '') {
+            throw new InvalidArgumentException('Pass a webhook URL, or set the "webhook_url" option on the client.');
+        }
+
         return $this->createModel(WebhookEndpoint::class, 'webhooks', ['url' => $url, 'is_active' => $isActive], $options);
     }
 

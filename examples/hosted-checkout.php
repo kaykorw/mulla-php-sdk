@@ -12,7 +12,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Mulla\MullaClient;
 use Mulla\Params\CreateCheckoutParams;
 
-$mulla = new MullaClient((string) getenv('MULLA_SECRET_KEY'));
+$mulla = new MullaClient(['api_key' => getenv('MULLA_SECRET_KEY')]);
 
 $orderId = 1001;
 
@@ -27,5 +27,4 @@ $session = $mulla->charges->createCheckout(
     ['idempotency_key' => '6f1c2b9e-4a7d-4c3e-9b1a-' . str_pad((string) $orderId, 12, '0', STR_PAD_LEFT)],
 );
 
-// Save $session->charge against the order, then:
 header('Location: ' . $session->checkoutUrl, true, 303);

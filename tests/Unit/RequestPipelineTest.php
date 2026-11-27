@@ -19,7 +19,7 @@ final class RequestPipelineTest extends TestCase
 {
     public function testPostSendsAuthContextAndIdempotencyHeaders(): void
     {
-        $client = $this->client(['lang' => 'fr', 'appInfo' => 'my-shop/1.0']);
+        $client = $this->client(['lang' => 'fr', 'app_info' => ['name' => 'my-shop', 'version' => '1.0']]);
         $this->fake->pushJson(self::charge());
 
         $client->charges->initiate(['provider' => Provider::MTN_RW, 'amount' => 5000, 'phone_number' => '250788000000']);
@@ -107,7 +107,7 @@ final class RequestPipelineTest extends TestCase
 
     public function testGivesUpAfterMaxRetries(): void
     {
-        $client = $this->client(['maxRetries' => 1]);
+        $client = $this->client(['max_retries' => 1]);
         $this->fake->pushError(500, 'INTERNAL')->pushError(500, 'INTERNAL');
 
         $this->expectException(ApiServerException::class);
@@ -120,7 +120,7 @@ final class RequestPipelineTest extends TestCase
 
     public function testConnectionErrorSurfacesAfterRetries(): void
     {
-        $client = $this->client(['maxRetries' => 0]);
+        $client = $this->client(['max_retries' => 0]);
         $this->fake->pushConnectionError('Could not resolve host');
 
         $this->expectException(ConnectionException::class);

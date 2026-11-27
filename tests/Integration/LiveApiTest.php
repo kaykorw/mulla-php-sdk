@@ -28,7 +28,7 @@ final class LiveApiTest extends TestCase
             self::markTestSkipped('Set MULLA_SECRET_KEY to run integration tests (MULLA_BASE_URL is optional).');
         }
 
-        $this->mulla = new MullaClient($key, ['maxRetries' => 1]);
+        $this->mulla = new MullaClient(['api_key' => $key, 'base_url' => getenv('MULLA_BASE_URL'), 'max_retries' => 1]);
     }
 
     public function testListsCharges(): void
