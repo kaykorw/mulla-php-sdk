@@ -2,7 +2,7 @@
 
 <!-- x-release-please-start-version -->
 
-> This guide applies to `kayko/mulla-php` **0.0.2** and the Mulla API **v1**. See [Versioning and compatibility](#versioning-and-compatibility).
+> This guide applies to `kayko/mulla-php` **0.1.0** and the Mulla API **v1**. See [Versioning and compatibility](#versioning-and-compatibility).
 
 <!-- x-release-please-end -->
 
@@ -698,7 +698,7 @@ $mulla = new MullaClient([
 
 | Package version | Mulla API | Tested in CI on             |
 | --------------- | --------- | --------------------------- |
-| 0.0.2           | v1        | PHP 8.1, 8.2, 8.3, 8.4, 8.5 |
+| 0.1.0           | v1        | PHP 8.1, 8.2, 8.3, 8.4, 8.5 |
 
 <!-- x-release-please-end -->
 

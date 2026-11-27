@@ -3,6 +3,18 @@
 All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.1.0](https://github.com/kaykorw/mulla-php-sdk/compare/v0.0.2...v0.1.0) (2026-11-27)
+
+
+### Features
+
+* Refactor MullaClient to accept options as a single array and improve error handling ([00748be](https://github.com/kaykorw/mulla-php-sdk/commit/00748be649257d724cdbee938c2b3c38e5749796))
+
+
+### Miscellaneous Chores
+
+* MullaClient and enhance error handling and validation ([e7e5ac7](https://github.com/kaykorw/mulla-php-sdk/commit/e7e5ac7a73f6c7db929f2685f93d93c72640ef85))
+
 ## [0.0.2](https://github.com/kaykorw/mulla-php-sdk/compare/v0.0.1...v0.0.2) (2026-11-19)
 
 
